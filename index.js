@@ -6,6 +6,8 @@ const bcrypt = require("bcrypt")
 //importing users from DB
 const {users} = require("./services/database")
 
+require("./services/passport")
+
 const app = express()
 
 app.use(express.json())
@@ -41,6 +43,26 @@ app.post("/register", async (req, res) => {
         res.status(500).json({error: "Something went wrong"})
         console.error("Registration error:", error)
     }
+})
+
+//Login existing users
+app.post("/login", async (req, res) => {
+    passport.authenticate('local', (error, user, info) => {
+        if (error){
+            res.status(500).json({error: "Something went wrong"})
+        }
+
+        if (!user){
+            return res.status(400).json(info)
+        }
+
+        req.login(user, (error) => {
+            if(error){
+                return res.status(500).json({error: "Something went wrong"})
+            }
+            return res.status(200).json({id: user._id, name: user.name, email: user.email})
+        })
+    })(req, res)
 })
 
 
