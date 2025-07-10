@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt")
 
 //importing users from DB
 const {users} = require("./services/database")
+const {ensureAuthenticated} = require("./middlewares/auth")
 
 require("./services/passport")
 
@@ -17,6 +18,9 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }))
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 //reg users
 app.post("/register", async (req, res) => {
@@ -65,10 +69,23 @@ app.post("/login", async (req, res) => {
     })(req, res)
 })
 
+//Get all users
+app.get('/me', ensureAuthenticated, (req, res) => {
+    res.json({id: req.user._id, name: req.user.name, email:req.user.email})
+})
+
+//Logout
+app.get("/logout", (req, res) => {
+    req.logout((error) => {
+        if(error){
+            return res.status(500).json({error: "Something went wrong"})
+        }
+
+        res.status(204).send()
+    })
+})
 
 
-app.use(passport.initialize())
-app.use(passport.session())
 
 app.listen(3000, (req, res) => {
     console.log("Server started on port 3000")

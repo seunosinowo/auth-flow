@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt")
 
 const {users} = require("../services/database")
 
-passport.use(new LocalStrategy({usernameField: email}, async (email, password, done) => {
+passport.use(new LocalStrategy({usernameField: 'email'}, async (email, password, done) => {
     try{
         const user = await users.findOne({email})
 
