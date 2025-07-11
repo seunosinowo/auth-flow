@@ -2,6 +2,7 @@ const express = require("express")
 const session = require("express-session")
 const passport = require("passport")
 const bcrypt = require("bcrypt")
+const cors = require("cors")
 
 //importing users from DB
 const {users} = require("./services/database")
@@ -12,6 +13,10 @@ require("./services/passport")
 const app = express()
 
 app.use(express.json())
+app.use(cors({
+    credentials: true,
+    origin: 'http://localhost:3001'
+}))
 
 app.use(session({
     secret: "my-session-secret",
