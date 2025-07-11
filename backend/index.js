@@ -2,6 +2,7 @@ const express = require("express")
 const session = require("express-session")
 const passport = require("passport")
 const bcrypt = require("bcrypt")
+const GoogleStrategy = require("passport-google-oauth20").Strategy
 const cors = require("cors")
 
 //importing users from DB
@@ -72,6 +73,14 @@ app.post("/login", async (req, res) => {
             return res.status(200).json({id: user._id, name: user.name, email: user.email})
         })
     })(req, res)
+})
+
+//Login with auth
+app.get('/auth/google', passport.authenticate('google', {scope: ('profile', 'email')}))
+
+//Callback
+app.get('/auth/google/callback', passport.authenticate('google', {failureRedirect: false }), (req, res) => {
+    res.redirect('http://localhost:3001')
 })
 
 //Get all users
